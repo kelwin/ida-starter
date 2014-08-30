@@ -1,0 +1,57 @@
+#!/usr/bin/env python2
+
+# borrowed some code from zTrix's idascirpt
+# note that this script is for mac version IDA Pro only
+# you will need to modify it if you want it on other platforms
+
+import os, sys, subprocess
+
+try:
+    from termcolor import colored
+except:
+    def colored(text, color=None, on_color=None, attrs=None):
+        return text
+
+def log(s, color = None, on_color = None, attrs = None, new_line = True):
+    if not color:
+        print >> sys.stderr, str(s),
+    else:
+        print >> sys.stderr, colored(str(s), color, on_color, attrs),
+    if new_line:
+        sys.stderr.write('\r\n')        # \r is needed to return to begin of line in raw mode 
+    sys.stderr.flush()
+
+IDA_PATH = None
+guess_path = ['/Applications/IDA Pro 6.6/', '/Applications/IDA Pro 6.5/', '/Applications/IDA Pro'] + map(lambda x: os.path.join('/Applications', x), os.listdir('/Applications/'))
+for p in guess_path:
+    if os.path.exists(p) and p.lower().find('ida') > -1 and os.path.exists(os.path.join(p, 'idaq.app/Contents/MacOS/idaq')):
+        IDA_PATH = os.path.join(p, 'idaq.app/Contents/MacOS/')
+        break
+
+if not IDA_PATH or not os.path.exists(IDA_PATH) or not os.path.exists(os.path.join(IDA_PATH, 'idaq')):
+    log('error: IDA not found at %s, where did you install it?' % IDA_PATH, 'red')
+    sys.exit(12)
+
+if len(sys.argv) <= 1 or not os.path.exists(sys.argv[1]):
+    print ""
+    print "Usage: %s [target file]" % os.path.basename(sys.argv[0])
+    print ""
+    sys.exit(10)
+
+target = sys.argv[1]
+ida = 'idaq'
+
+if target.endswith('.i64'):
+    ida += "64"
+else:
+    file_result = subprocess.check_output(['file', target])
+    if file_result.find('64-bit') != -1:
+        ida += "64"
+
+args = [os.path.join(IDA_PATH, ida), target]
+
+sys.stderr.flush()
+
+# for IDA commandline switches, https://www.hex-rays.com/products/ida/support/idadoc/417.shtml
+proc = subprocess.Popen(args, stderr=None)
+
