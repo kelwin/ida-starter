@@ -53,5 +53,5 @@ args = [os.path.join(IDA_PATH, ida), target]
 sys.stderr.flush()
 
 # for IDA commandline switches, https://www.hex-rays.com/products/ida/support/idadoc/417.shtml
-proc = subprocess.Popen(args, stderr=None)
+proc = subprocess.Popen(args, stderr=open(os.devnull, 'w'))
 
