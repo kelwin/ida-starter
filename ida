@@ -22,7 +22,7 @@ def log(s, color = None, on_color = None, attrs = None, new_line = True):
     sys.stderr.flush()
 
 IDA_PATH = None
-guess_path = ['/Applications/IDA Pro 6.6/', '/Applications/IDA Pro 6.5/', '/Applications/IDA Pro'] + map(lambda x: os.path.join('/Applications', x), os.listdir('/Applications/'))
+guess_path = ['/applications/ida pro 6.8/', '/applications/ida pro 6.7/', '/applications/ida pro 6.6/', '/Applications/IDA Pro 6.5/', '/Applications/IDA Pro'] + map(lambda x: os.path.join('/Applications', x), os.listdir('/Applications/'))
 for p in guess_path:
     if os.path.exists(p) and p.lower().find('ida') > -1 and os.path.exists(os.path.join(p, 'idaq.app/Contents/MacOS/idaq')):
         IDA_PATH = os.path.join(p, 'idaq.app/Contents/MacOS/')
